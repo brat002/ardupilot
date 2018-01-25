@@ -25,6 +25,9 @@ const AP_HAL::HAL& hal = AP_HAL::get_HAL();
  */
 Plane::Plane(void)
     : DataFlash(fwver.fw_string, g.log_bitmask)
+#if defined(HAL_NEEDS_PARAM_HELPER)
+    , param_helper(false)
+#endif
 {
     // C++11 doesn't allow in-class initialisation of bitfields
     auto_state.takeoff_complete = true;

@@ -3,8 +3,13 @@
 #include "DataFlash_Backend.h"
 
 #include "DataFlash_File.h"
+#include "DataFlash_File_sd.h"
 #include "DataFlash_MAVLink.h"
 #include <GCS_MAVLink/GCS.h>
+#if CONFIG_HAL_BOARD == HAL_BOARD_REVOMINI
+#include "DataFlash_Revo.h"
+#endif
+
 
 DataFlash_Class *DataFlash_Class::_instance;
 
@@ -76,18 +81,42 @@ void DataFlash_Class::Init(const struct LogStructure *structures, uint8_t num_ty
     _num_types = num_types;
     _structures = structures;
 
-#if (HAL_OS_POSIX_IO || HAL_OS_FATFS_IO) && defined(HAL_BOARD_LOG_DIRECTORY)
+#if defined(HAL_BOARD_LOG_DIRECTORY)
     if (_params.backend_types == DATAFLASH_BACKEND_FILE ||
         _params.backend_types == DATAFLASH_BACKEND_BOTH) {
         DFMessageWriter_DFLogStart *message_writer =
             new DFMessageWriter_DFLogStart(_firmware_string);
         if (message_writer != nullptr)  {
+#if HAL_OS_POSIX_IO
             backends[_next_backend] = new DataFlash_File(*this,
                                                          message_writer,
                                                          HAL_BOARD_LOG_DIRECTORY);
+#elif CONFIG_HAL_BOARD == HAL_BOARD_REVOMINI && (defined(BOARD_SDCARD_NAME) || defined(BOARD_DATAFLASH_FATFS))
+            backends[_next_backend] = new DataFlash_File(*this,
+                                                         message_writer,
+                                                         HAL_BOARD_LOG_DIRECTORY);
+#endif
         }
         if (backends[_next_backend] == nullptr) {
             hal.console->printf("Unable to open DataFlash_File");
+        } else {
+            _next_backend++;
+        }
+    }
+#elif CONFIG_HAL_BOARD == HAL_BOARD_REVOMINI // restore dataflash logs
+
+    if (_params.backend_types == DATAFLASH_BACKEND_FILE ||
+        _params.backend_types == DATAFLASH_BACKEND_BOTH) {
+
+        DFMessageWriter_DFLogStart *message_writer =
+            new DFMessageWriter_DFLogStart(_firmware_string);
+        if (message_writer != nullptr)  {
+
+            backends[_next_backend] = new DataFlash_Revo(*this, message_writer);
+        }
+
+        if (backends[_next_backend] == nullptr) {
+            hal.console->printf("Unable to open DataFlash_Revo");
         } else {
             _next_backend++;
         }

@@ -51,6 +51,9 @@ Copter::Copter(void)
     mainLoop_count(0),
     auto_trim_counter(0),
     in_mavlink_delay(false),
+#if defined(HAL_NEEDS_PARAM_HELPER)
+    param_helper(false),
+#endif
     param_loader(var_info),
     flightmode(&mode_stabilize)
 {

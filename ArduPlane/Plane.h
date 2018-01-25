@@ -101,6 +101,10 @@
 #include "quadplane.h"
 #include "tuning.h"
 
+#if defined(HAL_NEEDS_PARAM_HELPER)
+#include <AP_Param_Helper/AP_Param_Helper.h>
+#endif
+
 // Configuration
 #include "config.h"
 
@@ -778,6 +782,9 @@ private:
     AP_Arming_Plane arming{ahrs, barometer, compass, battery};
 
     AP_Param param_loader {var_info};
+#if defined(HAL_NEEDS_PARAM_HELPER)
+    AP_Param_Helper param_helper;
+#endif
 
     static const AP_Scheduler::Task scheduler_tasks[];
     static const AP_Param::Info var_info[];

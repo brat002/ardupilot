@@ -128,6 +128,11 @@
 #include "afs_copter.h"
 #endif
 
+#if defined(HAL_NEEDS_PARAM_HELPER)
+#include <AP_Param_Helper/AP_Param_Helper.h>
+#endif
+
+
 // Local modules
 #include "Parameters.h"
 #include "avoidance_adsb.h"
@@ -136,6 +141,8 @@
 #include <SITL/SITL.h>
 #endif
 
+
+extern const AP_HAL::HAL& hal;
 
 class Copter : public AP_HAL::HAL::Callbacks {
 public:
@@ -553,6 +560,10 @@ private:
 #if VISUAL_ODOMETRY_ENABLED == ENABLED
     // last visual odometry update time
     uint32_t visual_odom_last_update_ms;
+#endif
+
+#if defined(HAL_NEEDS_PARAM_HELPER)
+    AP_Param_Helper param_helper;
 #endif
 
     // Top-level logic
