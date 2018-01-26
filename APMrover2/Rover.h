@@ -80,6 +80,10 @@
 #include <SITL/SITL.h>
 #endif
 
+#if DEVO_TELEM_ENABLED == ENABLED
+ #include <AP_Devo_Telem/AP_Devo_Telem.h>
+#endif
+
 // Local modules
 #include "AP_MotorsUGV.h"
 #include "mode.h"
@@ -294,6 +298,9 @@ private:
 #if FRSKY_TELEM_ENABLED == ENABLED
     // FrSky telemetry support
     AP_Frsky_Telem frsky_telemetry{ahrs, battery, rangefinder};
+#endif
+#if DEVO_TELEM_ENABLED == ENABLED
+    AP_Devo_Telem devo_telemetry = AP_Devo_Telem::create(ahrs, battery);
 #endif
 
     uint32_t control_sensors_present;

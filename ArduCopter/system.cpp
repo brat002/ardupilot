@@ -111,6 +111,11 @@ void Copter::init_ardupilot()
                          &g.fs_batt_voltage, &g.fs_batt_mah, &ap.value);
 #endif
 
+#if DEVO_TELEM_ENABLED == ENABLED
+    // setup devo
+    devo_telemetry.init(serial_manager);
+#endif
+
 #if LOGGING_ENABLED == ENABLED
     log_init();
 #endif
